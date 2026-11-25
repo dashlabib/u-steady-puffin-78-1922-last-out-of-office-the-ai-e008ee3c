@@ -53,8 +53,10 @@ def mirror(text: str) -> None:
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8", newline="\n") as handle:
         handle.write(text)
-    with open(OUTPUT_PATH, "r", encoding="utf-8", newline="") as handle:
-        if handle.read() != text:
+    # Verify byte for byte, not just as decoded text: a newline translation
+    # or encoding slip would survive a str comparison but fail this one.
+    with open(OUTPUT_PATH, "rb") as handle:
+        if handle.read() != text.encode("utf-8"):
             raise IOError("entry file does not match printed output")
 
 
